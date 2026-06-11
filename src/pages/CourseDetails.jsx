@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert } from 'lucide-react';
+import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert } from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
 
 const CourseDetails = () => {
@@ -13,6 +13,7 @@ const CourseDetails = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeModule, setActiveModule] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // High Quality Mock courses database fallback
   const mockCourses = [
@@ -24,6 +25,8 @@ const CourseDetails = () => {
       duration: '6 Weeks', 
       level: 'Beginner', 
       description: 'Fun interactive speech exercise for kids. Mastering standard sound alphabets, basic reading blocks, and auditory recognition tables.',
+      bannerImage: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop&q=80',
+      introVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
       outcomes: [
         'Recognize and pronounce standard sounds correctly.',
         'Blend consonant-vowel-consonant (CVC) sounds easily.',
@@ -43,6 +46,8 @@ const CourseDetails = () => {
       duration: '8 Weeks', 
       level: 'Intermediate', 
       description: 'Enhance your written sentences, narrative prose structures, parts of speech parsing, and dynamic vocabulary blocks.',
+      bannerImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80',
+      introVideoUrl: 'https://www.w3schools.com/html/movie.mp4',
       outcomes: [
         'Understand verb agreements and tenses cheat sheets.',
         'Analyze sentence components and clauses.',
@@ -62,6 +67,8 @@ const CourseDetails = () => {
       duration: '12 Weeks', 
       level: 'Exam Prep', 
       description: 'Complete board question analyses, pre-tests evaluations, mock examinations, and intensive grammar feedback reviews.',
+      bannerImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80',
+      introVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
       outcomes: [
         'Resolve past board examination grammar papers.',
         'Master modifiers, connector links, and direct speech.',
@@ -81,6 +88,8 @@ const CourseDetails = () => {
       duration: '12 Weeks', 
       level: 'Exam Prep', 
       description: 'Detailed focus on modifiers, prepositions appropriate, composition summaries writing, and advanced syntax parsing.',
+      bannerImage: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=80',
+      introVideoUrl: 'https://www.w3schools.com/html/movie.mp4',
       outcomes: [
         'Master HSC Board prepositions and connector tricks.',
         'Synthesize complex modifiers and pronoun agreements.',
@@ -100,6 +109,8 @@ const CourseDetails = () => {
       duration: '8 Weeks', 
       level: 'Advanced', 
       description: 'Overcoming stage fear, corporate accent neutralisation, global workplace conversation setups, and mock speaking tests.',
+      bannerImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=80',
+      introVideoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
       outcomes: [
         'Deliver verbal presentations confidently in front of crowds.',
         'Neutralise accent barriers and speak standard English.',
@@ -117,21 +128,22 @@ const CourseDetails = () => {
     const fetchCourse = async () => {
       try {
         const res = await api.get(`/courses/${id}`);
+        const matched = mockCourses.find(c => c._id === id) || mockCourses[0];
         if (res.success && res.course) {
-          // Sync Outcomes and Curriculum if DB lacks them
-          const matched = mockCourses.find(c => c._id === id);
           setCourse({
+            ...matched,
             ...res.course,
-            outcomes: res.course.outcomes || matched?.outcomes || mockCourses[0].outcomes,
-            curriculum: res.course.curriculum || matched?.curriculum || mockCourses[0].curriculum
+            outcomes: res.course.outcomes || matched.outcomes,
+            curriculum: res.course.curriculum || matched.curriculum,
+            bannerImage: res.course.bannerImage || matched.bannerImage,
+            introVideoUrl: res.course.introVideoUrl || matched.introVideoUrl
           });
         } else {
-          const matched = mockCourses.find(c => c._id === id);
-          setCourse(matched || mockCourses[0]);
+          setCourse(matched);
         }
       } catch (err) {
-        const matched = mockCourses.find(c => c._id === id);
-        setCourse(matched || mockCourses[0]);
+        const matched = mockCourses.find(c => c._id === id) || mockCourses[0];
+        setCourse(matched);
       } finally {
         setLoading(false);
       }
@@ -218,6 +230,34 @@ const CourseDetails = () => {
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
               {course.description}
             </p>
+          </div>
+
+          {/* Intro Video Preview Container */}
+          <div className="relative aspect-video rounded-3xl overflow-hidden shadow-md border border-gray-150 dark:border-gray-800 bg-brand-black">
+            {isPlaying ? (
+              <video 
+                src={course.introVideoUrl} 
+                controls 
+                autoPlay 
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <div className="absolute inset-0 cursor-pointer group" onClick={() => setIsPlaying(true)}>
+                <img 
+                  src={course.bannerImage} 
+                  alt={course.title} 
+                  className="w-full h-full object-cover opacity-80 group-hover:scale-102 transition-transform duration-500" 
+                />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div className="h-16 w-16 rounded-full bg-brand-red text-white flex items-center justify-center shadow-lg shadow-brand-red/40 group-hover:scale-110 transition-transform">
+                    <Play className="h-6 w-6 fill-current ml-1" />
+                  </div>
+                </div>
+                <div className="absolute bottom-4 left-4 bg-brand-black/60 backdrop-blur-sm text-[9px] font-extrabold px-3 py-1.5 rounded-full text-white uppercase tracking-widest">
+                  Watch Intro Promo Video
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Metrics */}
