@@ -17,6 +17,10 @@ import Blog from '../pages/Blog';
 import Contact from '../pages/Contact';
 import About from '../pages/About';
 import Developer from '../pages/Developer';
+import FAQ from '../pages/FAQ';
+import Privacy from '../pages/Privacy';
+import Terms from '../pages/Terms';
+import Refund from '../pages/Refund';
 
 // Auth Pages
 import Login from '../pages/Login';
@@ -63,6 +67,10 @@ const AppRoutes = () => {
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="developer" element={<Developer />} />
+        <Route path="faq" element={<FAQ />} />
+        <Route path="privacy" element={<Privacy />} />
+        <Route path="terms" element={<Terms />} />
+        <Route path="refund" element={<Refund />} />
       </Route>
 
       {/* Auth Routes (under AuthLayout split screen) */}
