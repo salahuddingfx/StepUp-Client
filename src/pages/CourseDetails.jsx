@@ -14,6 +14,7 @@ const CourseDetails = () => {
   const [loading, setLoading] = useState(true);
   const [activeModule, setActiveModule] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [structure, setStructure] = useState([]);
 
   // High Quality Mock courses database fallback
   const mockCourses = [
@@ -133,17 +134,19 @@ const CourseDetails = () => {
           setCourse({
             ...matched,
             ...res.course,
-            outcomes: res.course.outcomes || matched.outcomes,
-            curriculum: res.course.curriculum || matched.curriculum,
-            bannerImage: res.course.bannerImage || matched.bannerImage,
+            outcomes: res.course.outcomes && res.course.outcomes.length > 0 ? res.course.outcomes : matched.outcomes,
+            bannerImage: res.course.thumbnail || matched.bannerImage,
             introVideoUrl: res.course.introVideoUrl || matched.introVideoUrl
           });
+          setStructure(res.structure && res.structure.length > 0 ? res.structure.map(s => ({ title: s.title, desc: s.description })) : matched.curriculum);
         } else {
           setCourse(matched);
+          setStructure(matched.curriculum);
         }
       } catch (err) {
         const matched = mockCourses.find(c => c._id === id) || mockCourses[0];
         setCourse(matched);
+        setStructure(matched.curriculum);
       } finally {
         setLoading(false);
       }
@@ -296,7 +299,7 @@ const CourseDetails = () => {
           <div className="space-y-4">
             <h2 className="text-sm sm:text-base font-extrabold">Course Curriculum</h2>
             <div className="space-y-3">
-              {course.curriculum?.map((cur, idx) => {
+              {structure?.map((cur, idx) => {
                 const isOpen = activeModule === idx;
                 return (
                   <div key={idx} className="border border-gray-150 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-brand-darkGray/40 transition-all duration-300">
