@@ -27,8 +27,10 @@ const AuthLayout = () => {
       </div>
 
       <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-12">
-        {/* Left Side Info Panel (Only visible on lg screens) */}
-        <div className="hidden lg:flex lg:col-span-5 relative bg-brand-black flex-col justify-between p-12 overflow-hidden">
+        {/* Info Panel (Dynamic Order: Left for Login, Right for Register) */}
+        <div className={`hidden lg:flex lg:col-span-5 relative bg-brand-black flex-col justify-between p-12 overflow-hidden ${
+          location.pathname === '/register' ? 'lg:order-last border-l border-gray-800' : 'lg:order-first'
+        }`}>
           {/* Animated/Glowing background circles */}
           <div className="absolute top-0 right-0 h-96 w-96 rounded-full bg-brand-red/10 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-brand-red/10 blur-3xl" />
@@ -61,8 +63,10 @@ const AuthLayout = () => {
           </div>
         </div>
 
-        {/* Right Side Form Panel */}
-        <div className="col-span-12 lg:col-span-7 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-20 bg-white dark:bg-brand-black/60 relative">
+        {/* Form Panel (Dynamic Order: Right for Login, Left for Register) */}
+        <div className={`col-span-12 lg:col-span-7 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-20 bg-white dark:bg-brand-black/60 relative ${
+          location.pathname === '/register' ? 'lg:order-first' : 'lg:order-last'
+        }`}>
           <div className="mx-auto w-full max-w-md">
             {loading ? <ProfileSkeleton /> : <Outlet />}
           </div>
