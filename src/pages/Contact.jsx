@@ -44,7 +44,7 @@ const Contact = () => {
               <div>
                 <h4 className="text-xs font-bold uppercase text-gray-400">Office Location</h4>
                 <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
-                  House 12, Road 4, Sector 7, Uttara, Dhaka, Bangladesh
+                  Dhoapalong, Ramu, Cox's Bazar, Bangladesh
                 </p>
               </div>
             </div>
@@ -130,7 +130,7 @@ const Contact = () => {
       <div className="bg-white dark:bg-brand-darkGray border border-gray-150/50 dark:border-gray-800/80 p-4 rounded-3xl shadow-sm overflow-hidden h-96 transition-all duration-300">
         <iframe 
           title="StepUp Office Location Map"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3648.3976378413247!2d90.39572627606346!3d23.875508824256247!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3757c5ef44c7b8d3%3A0xb7f516a2d9c02581!2sRoad%204%2C%20Sector%207%2C%20Uttara%2C%20Dhaka%201230!5e0!3m2!1sen!2sbd!4v1718105740000!5m2!1sen!2sbd"
+          src="https://maps.google.com/maps?q=Dhoapalong,%20Ramu,%20Cox's%20Bazar,%20Bangladesh&t=&z=14&ie=UTF8&iwloc=&output=embed"
           width="100%"
           height="100%"
           style={{ border: 0, borderRadius: '1.25rem' }}
