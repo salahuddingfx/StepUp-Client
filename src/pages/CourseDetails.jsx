@@ -12,6 +12,7 @@ const CourseDetails = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeModule, setActiveModule] = useState(0);
 
   // High Quality Mock courses database fallback
   const mockCourses = [
@@ -255,15 +256,27 @@ const CourseDetails = () => {
           <div className="space-y-4">
             <h2 className="text-sm sm:text-base font-extrabold">Course Curriculum</h2>
             <div className="space-y-3">
-              {course.curriculum?.map((cur, idx) => (
-                <div key={idx} className="p-4 border border-gray-150 dark:border-gray-800 rounded-xl bg-white dark:bg-brand-darkGray/40">
-                  <h4 className="text-xs font-bold flex items-center gap-2">
-                    <ChevronRight className="h-4 w-4 text-brand-red" />
-                    <span>{cur.title}</span>
-                  </h4>
-                  <p className="text-[11px] text-gray-500 pl-6 mt-1">{cur.desc}</p>
-                </div>
-              ))}
+              {course.curriculum?.map((cur, idx) => {
+                const isOpen = activeModule === idx;
+                return (
+                  <div key={idx} className="border border-gray-150 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-brand-darkGray/40 transition-all duration-300">
+                    <button
+                      onClick={() => setActiveModule(isOpen ? null : idx)}
+                      className="w-full flex items-center justify-between p-4 text-left font-bold text-xs sm:text-sm text-brand-black dark:text-white"
+                    >
+                      <span className="flex items-center gap-2">
+                        <ChevronRight className={`h-4 w-4 text-brand-red transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+                        {cur.title}
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <div className="px-4 pb-4 pt-1 text-[11px] text-gray-500 leading-relaxed border-t border-gray-50 dark:border-gray-800/40">
+                        {cur.desc}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
