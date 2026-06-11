@@ -28,11 +28,11 @@ const Home = () => {
   ];
 
   const programs = [
-    { title: 'Kids English', desc: 'Fun interactive games, basic vocab & phonics for younger levels.', level: 'Ages 5-10', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&auto=format&fit=crop&q=60' },
-    { title: 'Junior English', desc: 'Grammar essentials, writing compositions & speaking fluency.', level: 'Class 6-8', image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&auto=format&fit=crop&q=60' },
-    { title: 'SSC Prep', desc: 'Intensive academic syllabus preparation and mock exams.', level: 'Class 9-10', image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&auto=format&fit=crop&q=60' },
-    { title: 'HSC Prep', desc: 'Advanced literature review and grammar patterns for candidates.', level: 'Class 11-12', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&auto=format&fit=crop&q=60' },
-    { title: 'Spoken English', desc: 'Practical communication skills, IELTS support, and career dialogue.', level: 'Job Seekers & Adults', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=60' }
+    { id: 'c1', title: 'Kids English', desc: 'Fun interactive games, basic vocab & phonics for younger levels.', level: 'Ages 5-10', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&auto=format&fit=crop&q=60' },
+    { id: 'c2', title: 'Junior English', desc: 'Grammar essentials, writing compositions & speaking fluency.', level: 'Class 6-8', image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&auto=format&fit=crop&q=60' },
+    { id: 'c3', title: 'SSC Prep', desc: 'Intensive academic syllabus preparation and mock exams.', level: 'Class 9-10', image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&auto=format&fit=crop&q=60' },
+    { id: 'c4', title: 'HSC Prep', desc: 'Advanced literature review and grammar patterns for candidates.', level: 'Class 11-12', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&auto=format&fit=crop&q=60' },
+    { id: 'c5', title: 'Spoken English', desc: 'Practical communication skills, IELTS support, and career dialogue.', level: 'Job Seekers & Adults', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=60' }
   ];
 
   const teachers = [
@@ -122,10 +122,14 @@ const Home = () => {
               </div>
               <div className="p-6 flex-grow flex flex-col justify-between space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-bold">{p.title}</h3>
+                  <h3 className="text-lg font-bold hover:text-brand-red transition-colors">
+                    <Link to={`/programs/${p.id}`}>
+                      {p.title}
+                    </Link>
+                  </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{p.desc}</p>
                 </div>
-                <Link to="/programs" className="text-xs font-bold text-brand-red flex items-center space-x-1 hover:underline">
+                <Link to={`/programs/${p.id}`} className="text-xs font-bold text-brand-red flex items-center space-x-1 hover:underline">
                   <span>View Details</span>
                   <ArrowRight className="h-3 w-3" />
                 </Link>
