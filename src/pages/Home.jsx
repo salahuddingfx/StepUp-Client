@@ -1,16 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, CheckCircle2, Star, ShieldCheck, Award, GraduationCap, Play, Users, MessageCircle } from 'lucide-react';
 import { HeroSkeleton } from '../components/Skeleton';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const heroSlides = [
+    {
+      badge: "Welcome To English StepUp",
+      titleStart: "Master English With ",
+      titleHighlight: "Confidence",
+      titleEnd: "",
+      desc: "Empowering Growth Through Modern English Learning. Join custom programs designed by industry specialists for children, academic candidates, and professionals.",
+      ctaText: "Get Started",
+      ctaLink: "/programs",
+      glowClass: "bg-brand-red/5"
+    },
+    {
+      badge: "Target High Grades",
+      titleStart: "Ace Your ",
+      titleHighlight: "SSC & HSC",
+      titleEnd: " Examinations",
+      desc: "Secure GPA 5.00 grade targets with modifiers shortcut sheets, tenses drills, past board paper solutions, and regular exam-simulated checks.",
+      ctaText: "Explore Exam Prep",
+      ctaLink: "/programs",
+      glowClass: "bg-blue-500/5"
+    },
+    {
+      badge: "Speak Like a Pro",
+      titleStart: "Communicate ",
+      titleHighlight: "Fluently & Naturally",
+      titleEnd: "",
+      desc: "Eradicate conversational fear, neutralize accent barriers, and learn vocabulary in contexts structured for global workplaces.",
+      ctaText: "Join Spoken Course",
+      ctaLink: "/programs",
+      glowClass: "bg-emerald-500/5"
+    }
+  ];
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    const slideTimer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(slideTimer);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -55,35 +97,62 @@ const Home = () => {
   return (
     <div className="space-y-20 pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 md:pt-20 lg:pt-28">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-96 w-full max-w-7xl rounded-full bg-brand-red/5 blur-3xl -z-10" />
+      <section className="relative overflow-hidden pt-12 md:pt-20 lg:pt-28 min-h-[480px]">
+        {/* Animated Glow Background matching current slide color */}
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 h-96 w-full max-w-7xl rounded-full blur-3xl -z-10 transition-colors duration-1000 ${heroSlides[currentSlide].glowClass}`} />
+        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-6 max-w-3xl mx-auto">
-            <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-sm">
-              <Sparkles className="h-4 w-4 mr-1 text-brand-red animate-pulse" />
-              Welcome To English StepUp
-            </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-brand-black dark:text-white leading-tight">
-              Master English With <span className="text-brand-red">Confidence</span>
-            </h1>
-            <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 font-medium">
-              Empowering Growth Through Modern English Learning. Join custom programs designed by industry specialists for children, academic candidates, and professionals.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link
-                to="/programs"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-brand-red text-white text-sm font-bold shadow-lg shadow-brand-red/25 hover:bg-red-600 hover:shadow-xl hover:shadow-brand-red/30 transition-all flex items-center justify-center space-x-2"
-              >
-                <span>Get Started</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/about"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-gray-200 dark:border-gray-800 text-brand-black dark:text-white text-sm font-bold hover:bg-gray-50 dark:hover:bg-brand-darkGray/40 transition-colors flex items-center justify-center"
-              >
-                Learn More
-              </Link>
-            </div>
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={currentSlide}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="text-center space-y-6 max-w-3xl mx-auto"
+            >
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-sm">
+                <Sparkles className="h-4 w-4 mr-1 text-brand-red animate-pulse" />
+                {heroSlides[currentSlide].badge}
+              </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-brand-black dark:text-white leading-tight">
+                {heroSlides[currentSlide].titleStart}
+                <span className="text-brand-red">{heroSlides[currentSlide].titleHighlight}</span>
+                {heroSlides[currentSlide].titleEnd}
+              </h1>
+              <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+                {heroSlides[currentSlide].desc}
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Link
+                  to={heroSlides[currentSlide].ctaLink}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-brand-red text-white text-sm font-bold shadow-lg shadow-brand-red/25 hover:bg-red-600 hover:shadow-xl hover:shadow-brand-red/30 transition-all flex items-center justify-center space-x-2"
+                >
+                  <span>{heroSlides[currentSlide].ctaText}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/about"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-gray-200 dark:border-gray-800 text-brand-black dark:text-white text-sm font-bold hover:bg-gray-50 dark:hover:bg-brand-darkGray/40 transition-colors flex items-center justify-center"
+                >
+                  Learn More
+                </Link>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Slide Indicators */}
+          <div className="flex justify-center space-x-2 pt-6">
+            {heroSlides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  currentSlide === idx ? 'w-6 bg-brand-red' : 'w-2 bg-gray-300 dark:bg-gray-750'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       </section>

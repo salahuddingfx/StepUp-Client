@@ -27,7 +27,8 @@ const Navbar = () => {
     { name: 'Programs', path: '/programs' },
     { name: 'Spoken English', path: '/spoken-english' },
     { name: 'Success Stories', path: '/success-stories' },
-    { name: 'Blog', path: '/blog' }
+    { name: 'Blog', path: '/blog' },
+    { name: 'Contact', path: '/contact' }
   ];
 
   return (

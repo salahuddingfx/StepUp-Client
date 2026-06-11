@@ -125,6 +125,20 @@ const Contact = () => {
           </form>
         </div>
       </div>
+
+      {/* Google Maps Section */}
+      <div className="bg-white dark:bg-brand-darkGray border border-gray-150/50 dark:border-gray-800/80 p-4 rounded-3xl shadow-sm overflow-hidden h-96 transition-all duration-300">
+        <iframe 
+          title="StepUp Office Location Map"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3648.3976378413247!2d90.39572627606346!3d23.875508824256247!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3757c5ef44c7b8d3%3A0xb7f516a2d9c02581!2sRoad%204%2C%20Sector%207%2C%20Uttara%2C%20Dhaka%201230!5e0!3m2!1sen!2sbd!4v1718105740000!5m2!1sen!2sbd"
+          width="100%"
+          height="100%"
+          style={{ border: 0, borderRadius: '1.25rem' }}
+          allowFullScreen=""
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
     </div>
   );
 };
