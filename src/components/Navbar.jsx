@@ -37,7 +37,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <span className="h-9 w-9 rounded-lg bg-brand-red flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-brand-red/30">ES</span>
+              <img src="/StepUp.jpg" alt="StepUp Logo" className="h-9 w-9 rounded-lg object-cover shadow-lg shadow-brand-red/10 border border-gray-100 dark:border-gray-800" />
               <span className="font-extrabold text-lg tracking-wider text-brand-black dark:text-white">
                 English <span className="text-brand-red">StepUp</span>
               </span>

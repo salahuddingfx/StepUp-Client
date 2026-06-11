@@ -35,7 +35,7 @@ const AuthLayout = () => {
 
           {/* Logo block */}
           <div className="relative z-10 flex items-center space-x-2">
-            <span className="h-10 w-10 rounded-xl bg-brand-red flex items-center justify-center text-white font-extrabold text-2xl">ES</span>
+            <img src="/StepUp.jpg" alt="StepUp Logo" className="h-10 w-10 rounded-xl object-cover shadow-lg border border-gray-800" />
             <span className="font-extrabold text-xl tracking-wider text-white">
               English <span className="text-brand-red">StepUp</span>
             </span>
