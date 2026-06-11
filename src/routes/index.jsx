@@ -22,6 +22,7 @@ import Privacy from '../pages/Privacy';
 import Terms from '../pages/Terms';
 import Refund from '../pages/Refund';
 import BlogDetails from '../pages/BlogDetails';
+import CourseDetails from '../pages/CourseDetails';
 
 // Auth Pages
 import Login from '../pages/Login';
@@ -61,6 +62,7 @@ const AppRoutes = () => {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="programs" element={<Programs />} />
+        <Route path="programs/:id" element={<CourseDetails />} />
         <Route path="spoken-english" element={<SpokenEnglish />} />
         <Route path="teachers" element={<Teachers />} />
         <Route path="success-stories" element={<SuccessStories />} />
