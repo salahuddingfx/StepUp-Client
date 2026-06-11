@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Calendar, User, ArrowRight, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { BlogCardSkeleton } from '../components/Skeleton';
 
 const Blog = () => {
@@ -73,10 +74,13 @@ const Blog = () => {
               </div>
 
               <div className="px-6 pb-6 pt-2">
-                <button className="text-xs font-bold text-brand-red flex items-center space-x-1 hover:underline">
+                <Link 
+                  to={`/blog/${blog._id}`} 
+                  className="text-xs font-bold text-brand-red flex items-center space-x-1 hover:underline"
+                >
                   <span>Read Article</span>
                   <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+                </Link>
               </div>
             </div>
           ))}
