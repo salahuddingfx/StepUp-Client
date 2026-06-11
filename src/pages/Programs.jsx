@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { BookOpen, Tag, GraduationCap, Clock, Award } from 'lucide-react';
@@ -107,7 +107,11 @@ const Programs = () => {
                   </span>
                   <span className="text-xs font-bold text-gray-500">{course.level}</span>
                 </div>
-                <h3 className="text-base font-bold text-brand-black dark:text-white leading-snug">{course.title}</h3>
+                <h3 className="text-base font-bold text-brand-black dark:text-white leading-snug hover:text-brand-red transition-colors">
+                  <Link to={`/programs/${course._id}`}>
+                    {course.title}
+                  </Link>
+                </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{course.description}</p>
                 
                 <div className="grid grid-cols-2 gap-4 py-2 text-[11px] text-gray-500 border-t border-gray-100 dark:border-gray-800">
