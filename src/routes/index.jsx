@@ -21,6 +21,7 @@ import FAQ from '../pages/FAQ';
 import Privacy from '../pages/Privacy';
 import Terms from '../pages/Terms';
 import Refund from '../pages/Refund';
+import BlogDetails from '../pages/BlogDetails';
 
 // Auth Pages
 import Login from '../pages/Login';
@@ -64,6 +65,7 @@ const AppRoutes = () => {
         <Route path="teachers" element={<Teachers />} />
         <Route path="success-stories" element={<SuccessStories />} />
         <Route path="blog" element={<Blog />} />
+        <Route path="blog/:id" element={<BlogDetails />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="developer" element={<Developer />} />
