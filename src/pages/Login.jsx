@@ -26,7 +26,8 @@ const Login = () => {
         dispatch(loginSuccess(res));
         toast.success(`Welcome back, ${res.user.name}!`);
         if (res.user.role === 'admin') {
-          navigate('/admin');
+          const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
+          window.location.href = `${adminUrl}/admin?token=${res.accessToken}&user=${encodeURIComponent(JSON.stringify(res.user))}`;
         } else {
           navigate('/dashboard');
         }
