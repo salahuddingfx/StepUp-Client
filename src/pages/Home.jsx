@@ -127,6 +127,23 @@ const Home = () => {
     { id: 'fluent-spoken-english-workshop', title: 'Spoken English', desc: 'Practical communication skills, IELTS support, and career dialogue.', level: 'Job Seekers & Adults', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=60' }
   ];
 
+  const teachers = [
+    { name: 'Dr. Sarah Rahman', role: 'Chief Instructor (Ex-IELTS Examiner)', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=60' },
+    { name: 'James Miller', role: 'Native Spoken Trainer (UK Certified)', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&auto=format&fit=crop&q=60' },
+    { name: 'Anisul Islam', role: 'SSC & HSC Grammar Specialist', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=60' }
+  ];
+
+  const testimonials = [
+    { name: 'Tahmid Hasan', role: 'HSC Candidate', rating: 5, quote: 'English StepUp transformed my HSC Prep. The structured notes and daily feedback helped me secure an A+ in English!' },
+    { name: 'Nusrat Jahan', role: 'Spoken English Learner', rating: 5, quote: 'I used to struggle speaking in corporate meetings. The spoken course gave me the confidence to communicate fluently.' }
+  ];
+
+  const faqs = [
+    { q: 'What age groups do you support?', a: 'We offer courses for children starting at class 1 up to high school candidates, as well as separate corporate spoken modules for adult students.' },
+    { q: 'Do you offer certificates?', a: 'Yes! Upon finishing 100% of course materials and passing all final quizzes, digital completion certificates will automatically issue.' },
+    { q: 'How do I join the live classes?', a: 'Live video lecture meeting links are published inside your student portal under the active courses viewer.' }
+  ];
+
   const displayPrograms = dbCourses.length > 0
     ? dbCourses.slice(0, 3).map(c => ({
         id: c.slug || c._id,
@@ -153,23 +170,6 @@ const Home = () => {
         quote: t.content
       }))
     : testimonials;
-
-  const teachers = [
-    { name: 'Dr. Sarah Rahman', role: 'Chief Instructor (Ex-IELTS Examiner)', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=60' },
-    { name: 'James Miller', role: 'Native Spoken Trainer (UK Certified)', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&auto=format&fit=crop&q=60' },
-    { name: 'Anisul Islam', role: 'SSC & HSC Grammar Specialist', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=60' }
-  ];
-
-  const testimonials = [
-    { name: 'Tahmid Hasan', role: 'HSC Candidate', rating: 5, quote: 'English StepUp transformed my HSC Prep. The structured notes and daily feedback helped me secure an A+ in English!' },
-    { name: 'Nusrat Jahan', role: 'Spoken English Learner', rating: 5, quote: 'I used to struggle speaking in corporate meetings. The spoken course gave me the confidence to communicate fluently.' }
-  ];
-
-  const faqs = [
-    { q: 'What age groups do you support?', a: 'We offer courses for children starting at class 1 up to high school candidates, as well as separate corporate spoken modules for adult students.' },
-    { q: 'Do you offer certificates?', a: 'Yes! Upon finishing 100% of course materials and passing all final quizzes, digital completion certificates will automatically issue.' },
-    { q: 'How do I join the live classes?', a: 'Live video lecture meeting links are published inside your student portal under the active courses viewer.' }
-  ];
 
   return (
     <div className="space-y-20 pb-20">
