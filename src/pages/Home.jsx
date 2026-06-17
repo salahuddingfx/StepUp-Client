@@ -176,6 +176,11 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-12 md:pt-20 lg:pt-28 min-h-[480px]">
         {/* Animated Glow Background matching current slide color */}
+        {heroSlides[currentSlide]?.image && (
+          <div className="absolute inset-0 -z-20">
+            <img src={heroSlides[currentSlide].image} alt="" className="w-full h-full object-cover opacity-15" />
+          </div>
+        )}
         <div className={`absolute top-0 left-1/2 -translate-x-1/2 h-96 w-full max-w-7xl rounded-full blur-3xl -z-10 transition-colors duration-1000 ${heroSlides[currentSlide].glowClass}`} />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
