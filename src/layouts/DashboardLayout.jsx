@@ -6,7 +6,7 @@ import { toggleTheme } from '../store/themeSlice';
 import { 
   LayoutDashboard, BookOpen, FileText, FileSpreadsheet, 
   Award, BarChart3, Calendar, Bell, Settings, LogOut, 
-  Menu, X, Sun, Moon, Sparkles, FolderOpen
+  Menu, X, Sun, Moon, Sparkles, FolderOpen, IdCard
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -31,6 +31,7 @@ const DashboardLayout = () => {
     { name: 'Notes & PDFs', path: '/dashboard/notes', icon: FileText },
     { name: 'Resources', path: '/dashboard/resources', icon: FolderOpen },
     { name: 'Certificates', path: '/dashboard/certificates', icon: Award },
+    { name: 'ID Card', path: '/dashboard/id-card', icon: IdCard },
     { name: 'Quiz Results', path: '/dashboard/quizzes', icon: BarChart3 },
     { name: 'Attendance', path: '/dashboard/attendance', icon: Calendar },
     { name: 'Notifications', path: '/dashboard/notifications', icon: Bell },
