@@ -23,6 +23,7 @@ import Terms from '../pages/Terms';
 import Refund from '../pages/Refund';
 import BlogDetails from '../pages/BlogDetails';
 import CourseDetails from '../pages/CourseDetails';
+import CheckoutVerify from '../pages/CheckoutVerify';
 
 // Auth Pages
 import Login from '../pages/Login';
@@ -134,6 +135,9 @@ const AppRoutes = () => {
         <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<ProfileSettings />} />
       </Route>
+
+      {/* Standalone Pages */}
+      <Route path="checkout/verify" element={<PrivateRoute><CheckoutVerify /></PrivateRoute>} />
 
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />
