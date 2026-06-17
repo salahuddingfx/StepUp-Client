@@ -94,14 +94,31 @@ const ProfileSettings = () => {
       <div className="bg-white dark:bg-brand-darkGray p-6 rounded-3xl border border-gray-200/50 dark:border-gray-800/80 max-w-xl shadow-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-            <img 
-              src={user?.avatar} 
-              alt={user?.name} 
-              className="h-20 w-20 rounded-full object-cover border-4 border-brand-red/20 shadow-md self-center" 
-            />
-            <div className="space-y-1 self-center text-center sm:text-left">
+            <div className="relative group self-center h-20 w-20 shrink-0">
+              <img 
+                src={currentAvatar || user?.avatar} 
+                alt={user?.name} 
+                className="h-20 w-20 rounded-full object-cover border-4 border-brand-red/20 shadow-md transition-all group-hover:opacity-75" 
+              />
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full">
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                </div>
+              )}
+            </div>
+            <div className="space-y-2 self-center text-center sm:text-left">
               <h3 className="text-sm font-bold">{user?.name}</h3>
-              <p className="text-[10px] text-gray-400 capitalize">{user?.role} Account</p>
+              <p className="text-[10px] text-gray-400 capitalize mb-1">{user?.role} Account</p>
+              <label className="inline-block px-3 py-1.5 bg-gray-150 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-[10px] font-bold rounded-lg cursor-pointer transition-colors text-brand-black dark:text-gray-200">
+                <span>{uploading ? 'Uploading...' : 'Upload Image'}</span>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleAvatarUpload}
+                  disabled={uploading}
+                />
+              </label>
             </div>
           </div>
 
