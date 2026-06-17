@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, Send, HelpCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Smartphone, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ProfileSkeleton } from '../components/Skeleton';
+import api from '../services/api';
 
 const Contact = () => {
   const [loading, setLoading] = useState(true);
+  const [bkashNumber, setBkashNumber] = useState('');
+  const [nagadNumber, setNagadNumber] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
+    const fetch = async () => {
+      try {
+        const res = await api.get('/settings');
+        if (res.success && res.data) {
+          setBkashNumber(res.data.bkashNumber || '');
+          setNagadNumber(res.data.nagadNumber || '');
+        }
+      } catch (err) {
+        // silent
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
   }, []);
 
   if (loading) {
@@ -68,6 +83,30 @@ const Contact = () => {
                 <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">info@englishstepup.com</p>
               </div>
             </div>
+
+            {bkashNumber && (
+              <div className="flex items-start space-x-4">
+                <div className="h-10 w-10 bg-[#E2136E]/10 text-[#E2136E] flex items-center justify-center rounded-xl shrink-0">
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase text-gray-400">bKash (Send Money)</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-bold">{bkashNumber}</p>
+                </div>
+              </div>
+            )}
+
+            {nagadNumber && (
+              <div className="flex items-start space-x-4">
+                <div className="h-10 w-10 bg-[#F5821F]/10 text-[#F5821F] flex items-center justify-center rounded-xl shrink-0">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase text-gray-400">Nagad (Send Money)</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 font-bold">{nagadNumber}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
