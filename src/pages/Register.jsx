@@ -5,11 +5,12 @@ import { registerSchema } from '../validators/auth.validator';
 import { register as registerAPI } from '../services/auth.service';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { UserPlus, Mail, Lock, User, GraduationCap, Loader2 } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, GraduationCap, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
@@ -86,11 +87,18 @@ const Register = () => {
           <div className="relative">
             <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400" />
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               {...register('password')}
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2.5 bg-transparent border border-gray-200 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 bg-transparent border border-gray-200 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none transition-colors"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-3 text-gray-400 hover:text-brand-red transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
           {errors.password && <p className="text-[10px] text-brand-red font-medium">{errors.password.message}</p>}
         </div>
