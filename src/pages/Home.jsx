@@ -3,10 +3,15 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, CheckCircle2, Star, ShieldCheck, Award, GraduationCap, Play, Users, MessageCircle } from 'lucide-react';
 import { HeroSkeleton } from '../components/Skeleton';
+import api from '../services/api';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPlayingVideo, setIsPlayingVideo] = useState(false);
+  const [dbCourses, setDbCourses] = useState([]);
+  const [dbTeachers, setDbTeachers] = useState([]);
+  const [dbTestimonials, setDbTestimonials] = useState([]);
 
   const heroSlides = [
     {
@@ -47,6 +52,39 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get('/courses?isPublished=true');
+        if (res.success && res.courses) {
+          setDbCourses(res.courses);
+        }
+      } catch (err) {
+        console.error('Failed to fetch db courses:', err);
+      }
+
+      try {
+        const res = await api.get('/teachers');
+        if (res.success && res.teachers) {
+          setDbTeachers(res.teachers);
+        }
+      } catch (err) {
+        console.error('Failed to fetch db teachers:', err);
+      }
+
+      try {
+        const res = await api.get('/testimonials/approved');
+        if (res.success && res.testimonials) {
+          setDbTestimonials(res.testimonials);
+        }
+      } catch (err) {
+        console.error('Failed to fetch db testimonials:', err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     if (loading) return;
     const slideTimer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % heroSlides.length);
@@ -76,6 +114,33 @@ const Home = () => {
     { id: 'hsc-target-a-grammar', title: 'HSC Prep', desc: 'Advanced literature review and grammar patterns for candidates.', level: 'Class 11-12', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&auto=format&fit=crop&q=60' },
     { id: 'fluent-spoken-english-workshop', title: 'Spoken English', desc: 'Practical communication skills, IELTS support, and career dialogue.', level: 'Job Seekers & Adults', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=60' }
   ];
+
+  const displayPrograms = dbCourses.length > 0
+    ? dbCourses.slice(0, 3).map(c => ({
+        id: c.slug || c._id,
+        title: c.title,
+        desc: c.description,
+        level: c.level || 'Program',
+        image: c.thumbnail || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=60'
+      }))
+    : programs;
+
+  const displayTeachers = dbTeachers.length > 0
+    ? dbTeachers.slice(0, 3).map(t => ({
+        name: t.user?.name || 'Expert Coach',
+        role: t.expertise?.join(', ') || 'English Instructor',
+        image: t.user?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=60'
+      }))
+    : teachers;
+
+  const displayTestimonials = dbTestimonials.length > 0
+    ? dbTestimonials.slice(0, 2).map(t => ({
+        name: t.student?.name || 'Verified Learner',
+        role: 'Student',
+        rating: t.rating || 5,
+        quote: t.content
+      }))
+    : testimonials;
 
   const teachers = [
     { name: 'Dr. Sarah Rahman', role: 'Chief Instructor (Ex-IELTS Examiner)', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=60' },
@@ -183,7 +248,7 @@ const Home = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {programs.map((p, idx) => (
+          {displayPrograms.map((p, idx) => (
             <div key={idx} className="group flex flex-col bg-white dark:bg-brand-darkGray border border-gray-200/50 dark:border-gray-800/50 rounded-3xl overflow-hidden card-hover">
               <div className="h-48 overflow-hidden relative">
                 <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -225,14 +290,24 @@ const Home = () => {
               </div>
             </div>
             
-            <div className="lg:col-span-5 relative flex justify-center">
+            <div className="lg:col-span-5 relative flex justify-center w-full">
               <div className="w-full aspect-video md:max-w-md bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-800 flex items-center justify-center group relative cursor-pointer">
-                {/* Simulated video thumbnail */}
-                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80" alt="Video cover" className="w-full h-full object-cover opacity-60 group-hover:scale-102 transition-all" />
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
-                <div className="absolute h-14 w-14 rounded-full bg-brand-red text-white flex items-center justify-center shadow-lg shadow-brand-red/40 group-hover:scale-110 transition-transform">
-                  <Play className="h-6 w-6 fill-current ml-1" />
-                </div>
+                {isPlayingVideo ? (
+                  <video 
+                    src="https://www.w3schools.com/html/mov_bbb.mp4" 
+                    controls 
+                    autoPlay 
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center" onClick={() => setIsPlayingVideo(true)}>
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80" alt="Video cover" className="w-full h-full object-cover opacity-60 group-hover:scale-102 transition-all" />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
+                    <div className="absolute h-14 w-14 rounded-full bg-brand-red text-white flex items-center justify-center shadow-lg shadow-brand-red/40 group-hover:scale-110 transition-transform">
+                      <Play className="h-6 w-6 fill-current ml-1" />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -247,7 +322,7 @@ const Home = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {teachers.map((t, idx) => (
+          {displayTeachers.map((t, idx) => (
             <div key={idx} className="bg-white dark:bg-brand-darkGray border border-gray-200/50 dark:border-gray-800/50 p-6 rounded-3xl flex flex-col items-center text-center space-y-4 card-hover">
               <img src={t.image} alt={t.name} className="h-28 w-28 rounded-full object-cover border-4 border-brand-red/20 shadow-md" />
               <div>
@@ -268,7 +343,7 @@ const Home = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {testimonials.map((test, idx) => (
+          {displayTestimonials.map((test, idx) => (
             <div key={idx} className="bg-white dark:bg-brand-darkGray border border-gray-200/50 dark:border-gray-800/50 p-8 rounded-3xl shadow-md flex flex-col justify-between space-y-6 card-hover">
               <div className="space-y-4">
                 <div className="flex text-yellow-400">
