@@ -196,6 +196,60 @@ const CourseDetails = () => {
     fetchEnrollments();
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await api.get('/settings');
+        if (res.success && res.data) {
+          setBkashNumber(res.data.bkashNumber || '');
+          setNagadNumber(res.data.nagadNumber || '');
+        }
+      } catch (err) {
+        // silent
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const applyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setApplyingCoupon(true);
+    setCouponError('');
+    try {
+      const res = await api.post('/coupons/validate', { code: couponInput, amount: course?.price || 0 });
+      if (res.success) {
+        setCouponDiscount(res.discountAmount);
+        setCouponFinalAmount(res.finalAmount);
+        setCouponCode(couponInput.toUpperCase().trim());
+        setCouponApplied(true);
+        toast.success(`Coupon applied! You save ৳${res.discountAmount}`);
+      } else {
+        setCouponError(res.message || 'Invalid coupon');
+        setCouponApplied(false);
+        setCouponDiscount(0);
+        setCouponFinalAmount(null);
+        setCouponCode('');
+      }
+    } catch (err) {
+      setCouponError(err.message || 'Failed to apply coupon');
+      setCouponApplied(false);
+      setCouponDiscount(0);
+      setCouponFinalAmount(null);
+      setCouponCode('');
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponInput('');
+    setCouponDiscount(0);
+    setCouponFinalAmount(null);
+    setCouponApplied(false);
+    setCouponError('');
+    setCouponCode('');
+  };
+
   const isEnrolled = enrolledCourseIds.includes(course?._id) || enrolledCourseIds.includes(course?.slug);
 
   const handleEnroll = async () => {
@@ -227,12 +281,18 @@ const CourseDetails = () => {
   };
 
   const handleCheckout = async () => {
+    if (!senderNumber.trim()) {
+      toast.error('Please enter your bKash/Nagad number');
+      return;
+    }
     setCheckoutLoading(true);
     try {
       const res = await api.post('/payments/checkout', {
         courseId: course._id,
-        amount: course.price,
-        gateway: selectedGateway
+        amount: couponFinalAmount || course.price,
+        gateway: selectedGateway,
+        senderNumber: senderNumber.trim(),
+        couponCode: couponCode
       });
       if (res.success && res.redirectUrl) {
         window.location.href = res.redirectUrl;
