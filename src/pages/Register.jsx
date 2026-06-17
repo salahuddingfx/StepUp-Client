@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '../validators/auth.validator';
 import { register as registerAPI } from '../services/auth.service';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { UserPlus, Mail, Lock, User, GraduationCap, Loader2, Eye, EyeOff } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, GraduationCap, Loader2, Eye, EyeOff, AtSign } from 'lucide-react';
+import api from '../services/api';
 
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [allowTeacher, setAllowTeacher] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       role: 'student',
@@ -21,6 +23,24 @@ const Register = () => {
   });
 
   const selectedRole = watch('role');
+
+  useEffect(() => {
+    const fetchRegSettings = async () => {
+      try {
+        const response = await api.get('/settings');
+        if (response.success && response.data) {
+          const isAllowed = response.data.allowTeacherRegistration;
+          setAllowTeacher(isAllowed);
+          if (!isAllowed) {
+            setValue('role', 'student');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load register settings:', err);
+      }
+    };
+    fetchRegSettings();
+  }, [setValue]);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -66,6 +86,21 @@ const Register = () => {
           {errors.name && <p className="text-[10px] text-brand-red font-medium">{errors.name.message}</p>}
         </div>
 
+        {/* Username Input */}
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Username</label>
+          <div className="relative">
+            <AtSign className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              {...register('username')}
+              placeholder="tahmid_hasan"
+              className="w-full pl-10 pr-4 py-2.5 bg-transparent border border-gray-200 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none transition-colors"
+            />
+          </div>
+          {errors.username && <p className="text-[10px] text-brand-red font-medium">{errors.username.message}</p>}
+        </div>
+
         {/* Email Input */}
         <div className="space-y-1">
           <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Email Address</label>
@@ -104,19 +139,21 @@ const Register = () => {
         </div>
 
         {/* Role Selection */}
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-600 dark:text-gray-300">I am registering as a:</label>
-          <div className="grid grid-cols-2 gap-4">
-            <label className="flex items-center space-x-2 p-2.5 border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer">
-              <input type="radio" value="student" {...register('role')} className="text-brand-red focus:ring-brand-red" />
-              <span className="text-xs font-medium">Student</span>
-            </label>
-            <label className="flex items-center space-x-2 p-2.5 border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer">
-              <input type="radio" value="teacher" {...register('role')} className="text-brand-red focus:ring-brand-red" />
-              <span className="text-xs font-medium">Teacher</span>
-            </label>
+        {allowTeacher && (
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-600 dark:text-gray-300">I am registering as a:</label>
+            <div className="grid grid-cols-2 gap-4">
+              <label className="flex items-center space-x-2 p-2.5 border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer">
+                <input type="radio" value="student" {...register('role')} className="text-brand-red focus:ring-brand-red" />
+                <span className="text-xs font-medium">Student</span>
+              </label>
+              <label className="flex items-center space-x-2 p-2.5 border border-gray-200 dark:border-gray-800 rounded-lg cursor-pointer">
+                <input type="radio" value="teacher" {...register('role')} className="text-brand-red focus:ring-brand-red" />
+                <span className="text-xs font-medium">Teacher</span>
+              </label>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Student-specific target class input */}
         {selectedRole === 'student' && (
