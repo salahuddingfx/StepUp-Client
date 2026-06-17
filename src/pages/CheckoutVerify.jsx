@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, XCircle, ArrowLeft, ShieldCheck, Loader2, Smartphone, Building2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { CheckCircle2, XCircle, ArrowLeft, ShieldCheck, Loader2, Smartphone, Building2, Copy, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 
@@ -14,7 +14,6 @@ const gatewayUI = {
     textColor: 'text-[#E2136E]',
     bgLight: 'bg-[#E2136E]/10',
     borderColor: 'border-[#E2136E]/20',
-    accountPlaceholder: '01XXXXXXXXX',
     gradient: 'from-[#E2136E] to-[#C0105E]'
   },
   nagad: {
@@ -25,7 +24,6 @@ const gatewayUI = {
     textColor: 'text-[#F5821F]',
     bgLight: 'bg-[#F5821F]/10',
     borderColor: 'border-[#F5821F]/20',
-    accountPlaceholder: '01XXXXXXXXX',
     gradient: 'from-[#F5821F] to-[#D8720F]'
   }
 };
@@ -38,11 +36,13 @@ const CheckoutVerify = () => {
   const trxId = searchParams.get('trxId');
   const gateway = (searchParams.get('gateway') || 'bkash').toLowerCase();
 
-  const [accountNumber, setAccountNumber] = useState('');
-  const [pin, setPin] = useState('');
+  const [senderNumber, setSenderNumber] = useState('');
+  const [manualTrxId, setManualTrxId] = useState(trxId || '');
   const [verifying, setVerifying] = useState(false);
   const [status, setStatus] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
+  const [orgNumber, setOrgNumber] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const gw = gatewayUI[gateway] || gatewayUI.bkash;
   const GwIcon = gw.icon;
@@ -54,12 +54,44 @@ const CheckoutVerify = () => {
     }
   }, [paymentId, trxId, navigate]);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await api.get('/settings');
+        if (res.success && res.data) {
+          setOrgNumber(gateway === 'nagad' ? res.data.nagadNumber : res.data.bkashNumber);
+        }
+      } catch (err) {
+        // silent
+      }
+    };
+    fetchSettings();
+  }, [gateway]);
+
+  const copyNumber = () => {
+    if (orgNumber) {
+      navigator.clipboard.writeText(orgNumber);
+      setCopied(true);
+      toast.success('Number copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const handleSuccess = async () => {
+    if (!senderNumber.trim()) {
+      toast.error('Please enter your sender number');
+      return;
+    }
+    if (!manualTrxId.trim()) {
+      toast.error('Please enter your transaction ID');
+      return;
+    }
     setVerifying(true);
     try {
       const res = await api.post('/payments/verify', {
         paymentId,
-        transactionId: trxId,
+        transactionId: manualTrxId.trim(),
+        senderNumber: senderNumber.trim(),
         status: 'success'
       });
       if (res.success) {
@@ -84,7 +116,7 @@ const CheckoutVerify = () => {
     try {
       await api.post('/payments/verify', {
         paymentId,
-        transactionId: trxId,
+        transactionId: manualTrxId,
         status: 'failed'
       });
       setStatus('cancelled');
@@ -160,12 +192,27 @@ const CheckoutVerify = () => {
           <div className="mx-auto h-16 w-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
             <GwIcon className="h-8 w-8" />
           </div>
-          <h2 className="text-lg font-extrabold">{gw.name} Wallet Payment</h2>
-          <p className="text-xs text-white/80">Secure simulated payment gateway</p>
+          <h2 className="text-lg font-extrabold">{gw.name} Payment</h2>
+          <p className="text-xs text-white/80">Send money to the number below and confirm</p>
         </div>
 
         {/* Payment Body */}
         <div className="bg-white dark:bg-brand-darkGray rounded-b-3xl border-x border-b border-gray-200/50 dark:border-gray-800/80 p-6 space-y-5 shadow-xl">
+          {/* Org Payment Number */}
+          {orgNumber && (
+            <div className={`${gw.bgLight} ${gw.borderColor} border rounded-2xl p-4 text-center space-y-2`}>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Send Money to this {gw.name} Number</p>
+              <p className={`text-2xl font-black ${gw.textColor} tracking-wider`}>{orgNumber}</p>
+              <button
+                onClick={copyNumber}
+                className={`inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full ${gw.color} text-white text-[10px] font-bold transition-all hover:opacity-90`}
+              >
+                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                <span>{copied ? 'Copied' : 'Copy Number'}</span>
+              </button>
+            </div>
+          )}
+
           {/* Transaction Info */}
           <div className="bg-gray-50 dark:bg-brand-black/30 rounded-2xl p-4 space-y-2 text-xs">
             <div className="flex justify-between">
@@ -179,43 +226,50 @@ const CheckoutVerify = () => {
                 <span>{gw.name}</span>
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500 font-medium">Amount</span>
-              <span className="font-bold text-brand-black dark:text-white">See course page</span>
+          </div>
+
+          {/* Manual Confirmation Form */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Your Sender Number</label>
+              <input
+                type="text"
+                value={senderNumber}
+                onChange={(e) => setSenderNumber(e.target.value)}
+                placeholder="01XXXXXXXXX"
+                className="w-full px-4 py-3 bg-transparent border border-gray-250 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:border-brand-red transition-colors"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Transaction ID (From {gw.name} App)</label>
+              <input
+                type="text"
+                value={manualTrxId}
+                onChange={(e) => setManualTrxId(e.target.value)}
+                placeholder="Enter your transaction ID"
+                className="w-full px-4 py-3 bg-transparent border border-gray-250 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:border-brand-red transition-colors font-mono"
+              />
             </div>
           </div>
 
-          {/* Wallet Input Form */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-600 dark:text-gray-300">{gw.name} Account Number</label>
-              <input
-                type="text"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-                placeholder={gw.accountPlaceholder}
-                className="w-full px-4 py-3 bg-transparent border border-gray-250 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:border-brand-red transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Verification PIN</label>
-              <input
-                type="password"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="Enter your {gw.name} PIN"
-                maxLength={5}
-                className="w-full px-4 py-3 bg-transparent border border-gray-250 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:border-brand-red transition-colors"
-              />
-            </div>
+          {/* Instructions */}
+          <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200/50 dark:border-amber-800/30 rounded-xl p-3 space-y-1">
+            <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400">How to complete payment:</p>
+            <ol className="text-[9px] text-amber-700 dark:text-amber-300 space-y-0.5 list-decimal list-inside">
+              <li>Open your {gw.name} app and go to "Send Money"</li>
+              {orgNumber && <li>Send the exact amount to the number above</li>}
+              <li>Copy the Transaction ID from the confirmation SMS</li>
+              <li>Enter your sender number and the Transaction ID</li>
+              <li>Click "Confirm Payment" to notify the admin</li>
+            </ol>
           </div>
 
           {/* Security Badge */}
           <div className={`${gw.bgLight} ${gw.borderColor} border rounded-xl p-3 flex items-center space-x-2.5`}>
             <ShieldCheck className={`h-5 w-5 ${gw.textColor}`} />
             <div>
-              <p className="text-[10px] font-bold text-gray-600 dark:text-gray-300">Secured by StepUp Mock Gateway</p>
-              <p className="text-[9px] text-gray-400">This is a simulated payment for testing purposes</p>
+              <p className="text-[10px] font-bold text-gray-600 dark:text-gray-300">Your payment will be verified by admin</p>
+              <p className="text-[9px] text-gray-400">After admin approval, you will be enrolled in the course</p>
             </div>
           </div>
 
