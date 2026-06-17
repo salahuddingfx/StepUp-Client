@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert, ShieldCheck, Smartphone, Building2, Loader2, X } from 'lucide-react';
+import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert, ShieldCheck, Smartphone, Building2, Loader2, X, Percent } from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
 
 const CourseDetails = () => {
@@ -20,6 +20,16 @@ const CourseDetails = () => {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [selectedGateway, setSelectedGateway] = useState('bkash');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [bkashNumber, setBkashNumber] = useState('');
+  const [nagadNumber, setNagadNumber] = useState('');
+  const [senderNumber, setSenderNumber] = useState('');
+  const [couponInput, setCouponInput] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponFinalAmount, setCouponFinalAmount] = useState(null);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   // High Quality Mock courses database fallback
   const mockCourses = [
