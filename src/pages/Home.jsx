@@ -47,6 +47,8 @@ const Home = () => {
     }
   ];
 
+  const heroSlides = (settings?.heroSlides && settings.heroSlides.length > 0) ? settings.heroSlides : defaultSlides;
+
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
@@ -79,6 +81,15 @@ const Home = () => {
         }
       } catch (err) {
         console.error('Failed to fetch db testimonials:', err);
+      }
+
+      try {
+        const res = await api.get('/settings');
+        if (res.success && res.data) {
+          setSettings(res.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch settings:', err);
       }
     };
 
@@ -283,11 +294,11 @@ const Home = () => {
               <span className="text-xs font-bold tracking-wide text-brand-red uppercase">Meet Our Founder</span>
               <h2 className="text-2xl md:text-3xl font-extrabold">Empowering Growth through Modern Methods</h2>
               <blockquote className="text-sm italic text-gray-300 border-l-2 border-brand-red pl-4 leading-relaxed">
-                "Our philosophy is simple: language learning should not be boring list cramming. We teach English by communicating, practicing, and building vocabulary in context."
+                "{settings?.founderQuote || 'Our philosophy is simple: language learning should not be boring list cramming. We teach English by communicating, practicing, and building vocabulary in context.'}"
               </blockquote>
               <div>
-                <p className="text-sm font-bold text-white">Ahmed Shahriar</p>
-                <p className="text-xs text-gray-400">Founder & CEO, English StepUp</p>
+                <p className="text-sm font-bold text-white">{settings?.founderName || 'Ahmed Shahriar'}</p>
+                <p className="text-xs text-gray-400">{settings?.founderRole || 'Founder & CEO, English StepUp'}</p>
               </div>
             </div>
             
@@ -295,7 +306,7 @@ const Home = () => {
               <div className="w-full aspect-video md:max-w-md bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-800 flex items-center justify-center group relative cursor-pointer">
                 {isPlayingVideo ? (
                   <video 
-                    src="https://www.w3schools.com/html/mov_bbb.mp4" 
+                    src={settings?.introVideoUrl || 'https://www.w3schools.com/html/mov_bbb.mp4'}
                     controls 
                     autoPlay 
                     className="w-full h-full object-contain"
