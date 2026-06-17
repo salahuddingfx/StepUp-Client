@@ -108,7 +108,7 @@ const Programs = () => {
                   <span className="text-xs font-bold text-gray-500">{course.level}</span>
                 </div>
                 <h3 className="text-base font-bold text-brand-black dark:text-white leading-snug hover:text-brand-red transition-colors">
-                  <Link to={`/programs/${course._id}`}>
+                  <Link to={`/programs/${course.slug || course._id}`}>
                     {course.title}
                   </Link>
                 </h3>
