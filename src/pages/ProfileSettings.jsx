@@ -12,6 +12,7 @@ const ProfileSettings = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
@@ -19,12 +20,14 @@ const ProfileSettings = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       name: user?.name || '',
       avatar: user?.avatar || ''
     }
   });
+
+  const currentAvatar = watch('avatar');
 
   if (pageLoading) {
     return (
@@ -37,6 +40,32 @@ const ProfileSettings = () => {
       </div>
     );
   }
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'avatars');
+
+    setUploading(true);
+    try {
+      const res = await api.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      if (res.success && res.url) {
+        setValue('avatar', res.url);
+        toast.success('Avatar uploaded successfully!');
+      }
+    } catch (err) {
+      toast.error(err.message || 'Failed to upload avatar');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onSubmit = async (data) => {
     setLoading(true);
