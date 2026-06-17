@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert } from 'lucide-react';
+import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert, Smartphone, Building2, Loader2, X } from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
 
 const CourseDetails = () => {
@@ -15,6 +16,10 @@ const CourseDetails = () => {
   const [activeModule, setActiveModule] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [structure, setStructure] = useState([]);
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [selectedGateway, setSelectedGateway] = useState('bkash');
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // High Quality Mock courses database fallback
   const mockCourses = [
@@ -159,6 +164,24 @@ const CourseDetails = () => {
     fetchCourse();
   }, [id]);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fetchEnrollments = async () => {
+      try {
+        const res = await api.get('/students/dashboard');
+        if (res.success && res.courses) {
+          const ids = res.courses.map(c => c.course?._id?.toString()).filter(Boolean);
+          setEnrolledCourseIds(ids);
+        }
+      } catch (err) {
+        // silent fail
+      }
+    };
+    fetchEnrollments();
+  }, [isAuthenticated]);
+
+  const isEnrolled = enrolledCourseIds.includes(course?._id) || enrolledCourseIds.includes(course?.slug);
+
   const handleEnroll = async () => {
     if (!isAuthenticated) {
       toast.error('Please sign in to enroll in courses');
@@ -166,14 +189,44 @@ const CourseDetails = () => {
       return;
     }
 
+    if (isEnrolled) {
+      navigate(`/dashboard/course-view/${course._id}`);
+      return;
+    }
+
+    if (course.price === 0) {
+      try {
+        const res = await api.post('/students/enroll', { courseId: course._id });
+        if (res.success) {
+          toast.success('Enrolled successfully! Redirecting to dashboard...');
+          navigate('/dashboard/courses');
+        }
+      } catch (err) {
+        toast.error(err.message || 'Enrollment failed');
+      }
+      return;
+    }
+
+    setShowCheckoutModal(true);
+  };
+
+  const handleCheckout = async () => {
+    setCheckoutLoading(true);
     try {
-      const res = await api.post('/students/enroll', { courseId: course._id });
-      if (res.success) {
-        toast.success('Enrolled successfully! Redirecting to dashboard...');
-        navigate('/dashboard/courses');
+      const res = await api.post('/payments/checkout', {
+        courseId: course._id,
+        amount: course.price,
+        gateway: selectedGateway
+      });
+      if (res.success && res.redirectUrl) {
+        window.location.href = res.redirectUrl;
+      } else {
+        toast.error('Failed to initiate checkout');
       }
     } catch (err) {
-      toast.error(err.message || 'Enrollment failed');
+      toast.error(err.message || 'Checkout initiation failed');
+    } finally {
+      setCheckoutLoading(false);
     }
   };
 
@@ -370,14 +423,115 @@ const CourseDetails = () => {
 
             <button
               onClick={handleEnroll}
-              className="w-full py-3 bg-brand-red hover:bg-red-600 text-white rounded-full text-xs font-bold transition-all shadow-md shadow-brand-red/15 hover:shadow-lg hover:shadow-brand-red/25 flex items-center justify-center space-x-1.5"
+              className={`w-full py-3 rounded-full text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-1.5 ${
+                isEnrolled
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/15 hover:shadow-emerald-500/25'
+                  : 'bg-brand-red hover:bg-red-600 text-white shadow-brand-red/15 hover:shadow-lg hover:shadow-brand-red/25'
+              }`}
             >
               <BookOpen className="h-4 w-4" />
-              <span>Enroll In Program</span>
+              <span>{isEnrolled ? 'Go to Classroom' : course?.price === 0 ? 'Enroll Free' : 'Enroll In Program'}</span>
             </button>
           </div>
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <AnimatePresence>
+        {showCheckoutModal && (
+          <>
+            <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => !checkoutLoading && setShowCheckoutModal(false)} />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white dark:bg-brand-darkGray rounded-3xl border border-gray-200/50 dark:border-gray-800/80 shadow-2xl max-w-sm w-full overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800/50">
+                  <div>
+                    <h3 className="text-sm font-extrabold text-brand-black dark:text-white">Select Payment Gateway</h3>
+                    <p className="text-[10px] text-gray-400 mt-0.5">Course: {course?.title}</p>
+                  </div>
+                  <button
+                    onClick={() => setShowCheckoutModal(false)}
+                    disabled={checkoutLoading}
+                    className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 disabled:opacity-50"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Gateway Options */}
+                <div className="p-5 space-y-3">
+                  <button
+                    onClick={() => setSelectedGateway('bkash')}
+                    className={`w-full flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all ${
+                      selectedGateway === 'bkash'
+                        ? 'border-[#E2136E] bg-[#E2136E]/5'
+                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
+                    }`}
+                  >
+                    <div className="h-12 w-12 rounded-xl bg-[#E2136E] flex items-center justify-center shrink-0">
+                      <Smartphone className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-brand-black dark:text-white">bKash</p>
+                      <p className="text-[10px] text-gray-400">Pay via bKash mobile wallet</p>
+                    </div>
+                    {selectedGateway === 'bkash' && (
+                      <CheckCircle2 className="h-5 w-5 text-[#E2136E] ml-auto" />
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedGateway('nagad')}
+                    className={`w-full flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all ${
+                      selectedGateway === 'nagad'
+                        ? 'border-[#F5821F] bg-[#F5821F]/5'
+                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
+                    }`}
+                  >
+                    <div className="h-12 w-12 rounded-xl bg-[#F5821F] flex items-center justify-center shrink-0">
+                      <Building2 className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-brand-black dark:text-white">Nagad</p>
+                      <p className="text-[10px] text-gray-400">Pay via Nagad mobile wallet</p>
+                    </div>
+                    {selectedGateway === 'nagad' && (
+                      <CheckCircle2 className="h-5 w-5 text-[#F5821F] ml-auto" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Price & Confirm */}
+                <div className="px-5 pb-5 space-y-3">
+                  <div className="flex items-center justify-between bg-gray-50 dark:bg-brand-black/30 rounded-xl px-4 py-3">
+                    <span className="text-xs font-semibold text-gray-500">Total Amount</span>
+                    <span className="text-lg font-black text-brand-black dark:text-white">৳{course?.price}</span>
+                  </div>
+                  <button
+                    onClick={handleCheckout}
+                    disabled={checkoutLoading}
+                    className="w-full py-3 bg-brand-red hover:bg-red-600 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center space-x-2 disabled:opacity-50"
+                  >
+                    {checkoutLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <ShieldCheck className="h-4 w-4" />
+                        <span>Confirm & Pay</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
