@@ -43,6 +43,7 @@ import QuizResults from '../pages/QuizResults';
 import Attendance from '../pages/Attendance';
 import Notifications from '../pages/Notifications';
 import ProfileSettings from '../pages/ProfileSettings';
+import IdCard from '../pages/IdCard';
 
 // Private Route Guard
 const PrivateRoute = ({ children }) => {
@@ -134,6 +135,7 @@ const AppRoutes = () => {
         <Route path="attendance" element={<Attendance />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="settings" element={<ProfileSettings />} />
+        <Route path="id-card" element={<IdCard />} />
       </Route>
 
       {/* Standalone Pages */}
