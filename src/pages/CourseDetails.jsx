@@ -143,7 +143,13 @@ const CourseDetails = () => {
         if (res.success && res.course) {
           setCourse({
             ...matched,
-            ...res.course,
+            _id: res.course._id || matched._id,
+            title: res.course.title || matched.title,
+            description: res.course.description || matched.description,
+            category: res.course.category || matched.category,
+            price: (res.course.price && res.course.price > 0) ? res.course.price : matched.price,
+            duration: res.course.duration || matched.duration,
+            level: res.course.level || matched.level,
             outcomes: res.course.outcomes && res.course.outcomes.length > 0 ? res.course.outcomes : matched.outcomes,
             bannerImage: res.course.thumbnail || matched.bannerImage,
             introVideoUrl: res.course.introVideoUrl || matched.introVideoUrl
