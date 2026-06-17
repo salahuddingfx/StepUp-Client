@@ -15,6 +15,8 @@ const Assignments = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const { register, handleSubmit, reset } = useForm();
+
   if (pageLoading) {
     return (
       <div className="space-y-6">
@@ -22,7 +24,6 @@ const Assignments = () => {
       </div>
     );
   }
-  const { register, handleSubmit, reset } = useForm();
 
   const mockTasks = [
     { id: 'a1', title: 'Subject-Verb Agreement Worksheet', due: '2026-06-20', maxPoints: 100, status: 'Graded', score: 85, grade: 'A', instructions: 'Read sentences and conjugate corresponding helping verbs.' },
