@@ -138,7 +138,7 @@ const CourseDetails = () => {
             bannerImage: res.course.thumbnail || matched.bannerImage,
             introVideoUrl: res.course.introVideoUrl || matched.introVideoUrl
           });
-          setStructure(res.structure && res.structure.length > 0 ? res.structure.map(s => ({ title: s.title, desc: s.description })) : matched.curriculum);
+          setStructure(res.structure && res.structure.length > 0 ? res.structure : matched.curriculum);
         } else {
           setCourse(matched);
           setStructure(matched.curriculum);
@@ -313,8 +313,24 @@ const CourseDetails = () => {
                       </span>
                     </button>
                     {isOpen && (
-                      <div className="px-4 pb-4 pt-1 text-[11px] text-gray-500 leading-relaxed border-t border-gray-50 dark:border-gray-800/40">
-                        {cur.desc}
+                      <div className="px-4 pb-4 pt-2 text-[11px] text-gray-500 leading-relaxed border-t border-gray-50 dark:border-gray-800/40 space-y-4">
+                        <p>{cur.description || cur.desc}</p>
+                        {cur.lessons && cur.lessons.length > 0 && (
+                          <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800/50">
+                            <h5 className="font-extrabold text-[10px] text-brand-red uppercase tracking-wider">Lessons ({cur.lessons.length})</h5>
+                            <div className="grid grid-cols-1 gap-2">
+                              {cur.lessons.map((lesson, lIdx) => (
+                                <div key={lIdx} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-brand-black/20 border border-gray-150/40 dark:border-gray-800/60 text-[10px] font-semibold text-brand-black dark:text-gray-200">
+                                  <div className="flex items-center space-x-2">
+                                    <Play className="h-3.5 w-3.5 text-brand-red fill-current opacity-80 shrink-0" />
+                                    <span>{lesson.title}</span>
+                                  </div>
+                                  <span className="text-gray-400 font-medium shrink-0">{lesson.duration || '30 mins'}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
