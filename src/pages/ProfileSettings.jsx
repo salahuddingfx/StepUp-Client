@@ -19,6 +19,13 @@ const ProfileSettings = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      name: user?.name || '',
+      avatar: user?.avatar || ''
+    }
+  });
+
   if (pageLoading) {
     return (
       <div className="space-y-6">
@@ -30,13 +37,6 @@ const ProfileSettings = () => {
       </div>
     );
   }
-
-  const { register, handleSubmit } = useForm({
-    defaultValues: {
-      name: user?.name || '',
-      avatar: user?.avatar || ''
-    }
-  });
 
   const onSubmit = async (data) => {
     setLoading(true);
