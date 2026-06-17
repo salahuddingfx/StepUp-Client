@@ -12,8 +12,9 @@ const Home = () => {
   const [dbCourses, setDbCourses] = useState([]);
   const [dbTeachers, setDbTeachers] = useState([]);
   const [dbTestimonials, setDbTestimonials] = useState([]);
+  const [settings, setSettings] = useState(null);
 
-  const heroSlides = [
+  const defaultSlides = [
     {
       badge: "Welcome To English StepUp",
       titleStart: "Master English With ",
