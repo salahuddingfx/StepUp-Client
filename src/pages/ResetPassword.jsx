@@ -5,13 +5,14 @@ import { resetPasswordSchema } from '../validators/auth.validator';
 import { resetPassword } from '../services/auth.service';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { CheckCircle2, Lock, ShieldCheck, Loader2 } from 'lucide-react';
+import { CheckCircle2, Lock, ShieldCheck, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const emailParam = searchParams.get('email');
@@ -75,11 +76,18 @@ const ResetPassword = () => {
           <div className="relative">
             <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400" />
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               {...register('newPassword')}
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2.5 bg-transparent border border-gray-200 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none transition-colors"
+              className="w-full pl-10 pr-10 py-2.5 bg-transparent border border-gray-200 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none transition-colors"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-3 text-gray-400 hover:text-brand-red transition-colors"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
           {errors.newPassword && <p className="text-[10px] text-brand-red font-medium">{errors.newPassword.message}</p>}
         </div>
