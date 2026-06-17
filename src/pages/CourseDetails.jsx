@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert, Smartphone, Building2, Loader2, X } from 'lucide-react';
+import { Play, BookOpen, GraduationCap, Clock, Award, CheckCircle2, ChevronRight, ArrowLeft, Tag, ShieldAlert, ShieldCheck, Smartphone, Building2, Loader2, X } from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
 
 const CourseDetails = () => {
