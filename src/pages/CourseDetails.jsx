@@ -20,6 +20,7 @@ const CourseDetails = () => {
   const mockCourses = [
     { 
       _id: 'c1', 
+      slug: 'english-phonics-masterclass',
       title: 'English Phonics Masterclass', 
       category: 'Kids English', 
       price: 1500, 
@@ -41,6 +42,7 @@ const CourseDetails = () => {
     },
     { 
       _id: 'c2', 
+      slug: 'interactive-grammar-vocabulary',
       title: 'Interactive Grammar & Vocabulary', 
       category: 'Junior English', 
       price: 2000, 
@@ -62,6 +64,7 @@ const CourseDetails = () => {
     },
     { 
       _id: 'c3', 
+      slug: 'ssc-academic-prep-suite',
       title: 'SSC Academic Prep Suite', 
       category: 'SSC English Preparation', 
       price: 3000, 
@@ -83,6 +86,7 @@ const CourseDetails = () => {
     },
     { 
       _id: 'c4', 
+      slug: 'hsc-target-a-grammar',
       title: 'HSC Target A+ Grammar', 
       category: 'HSC English Preparation', 
       price: 3500, 
@@ -104,6 +108,7 @@ const CourseDetails = () => {
     },
     { 
       _id: 'c5', 
+      slug: 'fluent-spoken-english-workshop',
       title: 'Fluent Spoken English Workshop', 
       category: 'Spoken English', 
       price: 2500, 
@@ -129,7 +134,7 @@ const CourseDetails = () => {
     const fetchCourse = async () => {
       try {
         const res = await api.get(`/courses/${id}`);
-        const matched = mockCourses.find(c => c._id === id) || mockCourses[0];
+        const matched = mockCourses.find(c => c._id === id || c.slug === id) || mockCourses[0];
         if (res.success && res.course) {
           setCourse({
             ...matched,
@@ -144,7 +149,7 @@ const CourseDetails = () => {
           setStructure(matched.curriculum);
         }
       } catch (err) {
-        const matched = mockCourses.find(c => c._id === id) || mockCourses[0];
+        const matched = mockCourses.find(c => c._id === id || c.slug === id) || mockCourses[0];
         setCourse(matched);
         setStructure(matched.curriculum);
       } finally {
