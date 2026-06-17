@@ -554,7 +554,7 @@ const CourseDetails = () => {
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-bold text-brand-black dark:text-white">bKash</p>
-                      <p className="text-[10px] text-gray-400">Pay via bKash mobile wallet</p>
+                      <p className="text-[10px] text-gray-400">Send Money to this number</p>
                     </div>
                     {selectedGateway === 'bkash' && (
                       <CheckCircle2 className="h-5 w-5 text-[#E2136E] ml-auto" />
@@ -574,19 +574,80 @@ const CourseDetails = () => {
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-bold text-brand-black dark:text-white">Nagad</p>
-                      <p className="text-[10px] text-gray-400">Pay via Nagad mobile wallet</p>
+                      <p className="text-[10px] text-gray-400">Send Money to this number</p>
                     </div>
                     {selectedGateway === 'nagad' && (
                       <CheckCircle2 className="h-5 w-5 text-[#F5821F] ml-auto" />
                     )}
                   </button>
+
+                  {/* Org Payment Number */}
+                  {selectedGateway === 'bkash' && bkashNumber && (
+                    <div className="flex items-center justify-between bg-[#E2136E]/5 border border-[#E2136E]/20 rounded-xl px-4 py-3 text-xs">
+                      <span className="font-semibold text-gray-500">Send to bKash</span>
+                      <span className="font-extrabold text-[#E2136E]">{bkashNumber}</span>
+                    </div>
+                  )}
+                  {selectedGateway === 'nagad' && nagadNumber && (
+                    <div className="flex items-center justify-between bg-[#F5821F]/5 border border-[#F5821F]/20 rounded-xl px-4 py-3 text-xs">
+                      <span className="font-semibold text-gray-500">Send to Nagad</span>
+                      <span className="font-extrabold text-[#F5821F]">{nagadNumber}</span>
+                    </div>
+                  )}
+
+                  {/* Sender Number */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Your {selectedGateway === 'bkash' ? 'bKash' : 'Nagad'} Number</label>
+                    <input
+                      type="text"
+                      value={senderNumber}
+                      onChange={e => setSenderNumber(e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                      className="w-full px-3 py-2 bg-transparent border border-gray-250 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Coupon */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-600 dark:text-gray-300">Coupon Code (optional)</label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponApplied(false); setCouponError(''); }}
+                        placeholder="SUMMER50"
+                        disabled={couponApplied}
+                        className="flex-1 px-3 py-2 bg-transparent border border-gray-250 dark:border-gray-800 rounded-lg text-xs focus:border-brand-red focus:outline-none uppercase disabled:opacity-50"
+                      />
+                      {couponApplied ? (
+                        <button onClick={removeCoupon} className="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Remove</button>
+                      ) : (
+                        <button onClick={applyCoupon} disabled={applyingCoupon || !couponInput.trim()} className="px-3 py-2 bg-brand-red hover:bg-red-600 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50 flex items-center">
+                          {applyingCoupon ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Apply'}
+                        </button>
+                      )}
+                    </div>
+                    {couponError && <p className="text-[10px] text-red-500 font-semibold">{couponError}</p>}
+                  </div>
                 </div>
 
                 {/* Price & Confirm */}
                 <div className="px-5 pb-5 space-y-3">
-                  <div className="flex items-center justify-between bg-gray-50 dark:bg-brand-black/30 rounded-xl px-4 py-3">
-                    <span className="text-xs font-semibold text-gray-500">Total Amount</span>
-                    <span className="text-lg font-black text-brand-black dark:text-white">৳{course?.price}</span>
+                  <div className="space-y-2 bg-gray-50 dark:bg-brand-black/30 rounded-xl px-4 py-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-500">Original Price</span>
+                      <span className="text-sm font-bold text-brand-black dark:text-white">৳{course?.price}</span>
+                    </div>
+                    {couponApplied && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-emerald-500 flex items-center"><Percent className="h-3 w-3 mr-1" />Discount</span>
+                        <span className="text-sm font-bold text-emerald-500">-৳{couponDiscount}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex items-center justify-between">
+                      <span className="text-xs font-bold text-gray-500">Total Amount</span>
+                      <span className="text-lg font-black text-brand-black dark:text-white">৳{couponFinalAmount || course?.price}</span>
+                    </div>
                   </div>
                   <button
                     onClick={handleCheckout}
